@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI-штаб школи</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Як працює AI-штаб школи: помічник СЕО в месенджері, штаб агентів, вісім відділів, приклад виконання задачі, правила і план запуску.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="uk_UA">
+<meta property="og:title" content="AI-штаб школи">
+<meta property="og:description" content="Віртуальна команда AI-агентів, яка щодня приносить СЕО готові висновки й рішення на погодження. Підготовлено AISPACE.">
+<meta property="og:url" content="https://ros-ai-space.github.io/ai-shtab/">
+<meta name="theme-color" content="#17707A">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2317707A'/%3E%3Crect x='7' y='7' width='8' height='8' rx='2' fill='%23FBEEDD'/%3E%3Crect x='17' y='7' width='8' height='8' rx='2' fill='%23E0EFF0'/%3E%3Crect x='7' y='17' width='8' height='8' rx='2' fill='%23E0EFF0'/%3E%3Crect x='17' y='17' width='8' height='8' rx='2' fill='%23E0EFF0'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+/* Штабна карта: текстова колонка ~68ch + широкі схеми на всю ширину 1080px.
+   Колір = роль: людина вирішує (бурштин), AI-агент (бірюза), інструмент (індиго), дані (пунктир). */
+:root {
+  --bg: #F3F5F7;
+  --surface: #FFFFFF;
+  --frame: #F5FAFA;
+  --lane: #EDF0F3;
+  --dot: #D5DBE3;
+  --ink: #16202E;
+  --muted: #5A6577;
+  --line: #D6DCE4;
+  --wire: #3D4A5C;
+  --agent: #17707A;
+  --agent-soft: #E0EFF0;
+  --human: #A9560B;
+  --human-soft: #FBEEDD;
+  --tool: #4655A0;
+  --tool-soft: #E7E9F6;
+  --f-display: "Unbounded", "Manrope", system-ui, sans-serif;
+  --f-body: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E141D; --surface: #151E2A; --frame: #101C24; --lane: #121A25; --dot: #223042;
+    --ink: #E5EAF1; --muted: #9AA5B5; --line: #283445; --wire: #AAB5C4;
+    --agent: #5DB7C0; --agent-soft: #12313A;
+    --human: #E9A04A; --human-soft: #3A2814;
+    --tool: #9DA8EE; --tool-soft: #1F2647;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E141D; --surface: #151E2A; --frame: #101C24; --lane: #121A25; --dot: #223042;
+  --ink: #E5EAF1; --muted: #9AA5B5; --line: #283445; --wire: #AAB5C4;
+  --agent: #5DB7C0; --agent-soft: #12313A;
+  --human: #E9A04A; --human-soft: #3A2814;
+  --tool: #9DA8EE; --tool-soft: #1F2647;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 16px/1.6 var(--f-body);
+}
+.wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding-inline: clamp(16px, 4vw, 40px);
+  padding-block: 48px 72px;
+  display: flex;
+  flex-direction: column;
+  gap: 72px;
+}
+h1, h2 { font-family: var(--f-display); font-weight: 600; text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(2.1rem, 1.3rem + 3vw, 3.4rem); line-height: 1.08; }
+h2 { font-size: clamp(1.35rem, 1.1rem + 0.9vw, 1.75rem); line-height: 1.2; }
+h3 { font-size: 1.05rem; font-weight: 700; margin: 0; }
+p { margin: 0; }
+.eyebrow {
+  font-family: var(--f-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--agent);
+  font-weight: 500;
+}
+.prose { max-width: 68ch; color: var(--muted); }
+.section { display: flex; flex-direction: column; gap: 20px; }
+.section-head { display: flex; flex-direction: column; gap: 10px; }
+
+/* Hero */
+.hero { display: flex; flex-direction: column; gap: 22px; }
+.lead { font-size: 1.15rem; line-height: 1.55; max-width: 62ch; }
+.facts {
+  list-style: none; margin: 4px 0 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: 10px 28px;
+  font-size: 0.95rem; color: var(--muted);
+}
+.facts li { display: flex; align-items: center; gap: 10px; }
+.facts b { color: var(--ink); font-weight: 700; }
+.sw { width: 12px; height: 12px; border-radius: 3px; flex: none; border: 1.5px solid; }
+.sw.human { background: var(--human-soft); border-color: var(--human); }
+.sw.agent { background: var(--agent-soft); border-color: var(--agent); }
+.sw.tool { background: var(--tool-soft); border-color: var(--tool); }
+.sw.data { background: var(--surface); border-color: var(--muted); border-style: dashed; }
+
+/* Figures */
+figure { margin: 0; display: flex; flex-direction: column; gap: 12px; }
+.map {
+  background-color: var(--surface);
+  background-image: radial-gradient(var(--dot) 1px, transparent 1.2px);
+  background-size: 18px 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px;
+}
+.scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.scroll svg { display: block; width: 100%; min-width: 900px; height: auto; }
+figcaption { font-size: 0.9rem; color: var(--muted); max-width: 72ch; }
+.legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 0.875rem; color: var(--muted); }
+.legend li { display: flex; align-items: center; gap: 8px; }
+.swipe { display: none; font-family: var(--f-mono); font-size: 0.75rem; color: var(--muted); }
+@media (max-width: 940px) { .swipe { display: block; } }
+
+/* SVG */
+svg text { fill: var(--ink); font-family: var(--f-body); }
+.n rect { stroke-width: 1.5; }
+.n.human rect { fill: var(--human-soft); stroke: var(--human); }
+.n.agent rect { fill: var(--agent-soft); stroke: var(--agent); }
+.n.tool rect { fill: var(--tool-soft); stroke: var(--tool); }
+.n.data rect { fill: var(--surface); stroke: var(--muted); stroke-dasharray: 5 4; }
+.n.plain rect { fill: var(--surface); stroke: var(--line); }
+.frame rect { fill: var(--frame); stroke: var(--agent); stroke-width: 1.5; }
+.t-h { font-weight: 700; font-size: 14px; }
+.t-hl { font-weight: 700; font-size: 16px; }
+.t-s { font-size: 12px; fill: var(--muted); }
+.t-a { font-size: 12px; }
+.t-k { font-family: var(--f-mono); font-size: 11px; fill: var(--muted); }
+.t-lab { font-family: var(--f-mono); font-size: 11.5px; fill: var(--muted); }
+.t-frame { font-family: var(--f-mono); font-weight: 700; font-size: 12px; letter-spacing: 0.12em; fill: var(--agent); }
+.t-col { font-weight: 700; font-size: 13px; }
+.c-human { fill: var(--human); }
+.c-agent { fill: var(--agent); }
+.c-tool { fill: var(--tool); }
+.c-data { fill: var(--muted); }
+.t-step { font-size: 11.5px; }
+.wire { stroke: var(--wire); stroke-width: 1.5; fill: none; }
+.ahead { fill: var(--wire); }
+.lane { fill: var(--lane); }
+
+/* Roles */
+.roles { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.roles li {
+  display: grid;
+  grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+  gap: 6px 28px;
+  padding-block: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.role-name { display: flex; align-items: baseline; gap: 10px; font-weight: 700; }
+.role-name .sw { transform: translateY(1px); }
+.role-name small { display: block; font-family: var(--f-mono); font-weight: 400; font-size: 0.75rem; color: var(--muted); }
+.roles p { color: var(--muted); max-width: 64ch; }
+@media (max-width: 640px) { .roles li { grid-template-columns: minmax(0, 1fr); } }
+
+/* Departments */
+.depts { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 560px) { .depts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 980px) { .depts { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.dept {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px;
+  display: flex; flex-direction: column; gap: 14px;
+  min-width: 0;
+}
+.dept-top { display: flex; flex-direction: column; gap: 4px; }
+.dept-top .tag { font-family: var(--f-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--agent); }
+.agents { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.agents li { font-size: 0.9rem; line-height: 1.45; color: var(--muted); }
+.agents b { display: block; color: var(--ink); font-weight: 700; }
+.dept-foot {
+  margin-top: auto;
+  border-top: 1px dashed var(--line);
+  padding-top: 12px;
+  display: flex; flex-direction: column; gap: 6px;
+  font-size: 0.85rem;
+}
+.dept-foot .k { font-family: var(--f-mono); font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.dept-foot .you { color: var(--human); font-weight: 600; }
+
+/* Rhythm */
+.rhythm { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 900px) { .rhythm { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); } }
+.tbl { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 0.93rem; }
+th, td { text-align: left; vertical-align: top; padding: 12px 12px 12px 0; border-bottom: 1px solid var(--line); }
+th { font-family: var(--f-mono); font-weight: 500; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+td:first-child { white-space: nowrap; font-family: var(--f-mono); font-size: 0.85rem; font-variant-numeric: tabular-nums; color: var(--agent); }
+td:nth-child(2) { font-weight: 700; white-space: nowrap; }
+td:last-child { color: var(--muted); }
+
+.chat {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 18px;
+  display: flex; flex-direction: column; gap: 14px;
+  min-width: 0;
+}
+.chat-head { display: flex; align-items: center; gap: 12px; }
+.avatar {
+  width: 38px; height: 38px; border-radius: 10px; flex: none;
+  display: grid; place-items: center;
+  background: var(--agent-soft); color: var(--agent);
+  border: 1.5px solid var(--agent);
+  font-family: var(--f-display); font-weight: 600; font-size: 0.95rem;
+}
+.chat-head b { display: block; }
+.chat-head span { font-family: var(--f-mono); font-size: 0.75rem; color: var(--muted); }
+.bubble {
+  background: var(--lane);
+  border-radius: 4px 14px 14px 14px;
+  padding: 14px 16px;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.bubble ol { margin: 0; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 8px; }
+.bubble li::marker { font-family: var(--f-mono); color: var(--agent); }
+.bubble .num { font-variant-numeric: tabular-nums; font-weight: 700; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.actions span {
+  font-size: 0.85rem; font-weight: 600;
+  padding: 7px 14px; border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+}
+.actions span:first-child { border-color: var(--human); color: var(--human); }
+.note { font-family: var(--f-mono); font-size: 0.72rem; color: var(--muted); }
+
+/* Rules */
+.rules { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px 32px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 760px) { .rules { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.rules li {
+  display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 12px;
+  padding-block: 4px;
+  color: var(--muted);
+}
+.rules li::before {
+  content: "";
+  width: 14px; height: 14px; margin-top: 5px;
+  border-radius: 3px;
+  background: var(--human-soft);
+  border: 1.5px solid var(--human);
+}
+.rules b { color: var(--ink); }
+
+/* Plan */
+.plan { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); counter-reset: st; }
+@media (min-width: 600px) { .plan { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 980px) { .plan { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.plan li {
+  border-top: 3px solid var(--agent);
+  padding-top: 14px;
+  display: flex; flex-direction: column; gap: 8px;
+  min-width: 0;
+}
+.plan .when { font-family: var(--f-mono); font-size: 0.78rem; color: var(--agent); font-variant-numeric: tabular-nums; }
+.plan .when::before { counter-increment: st; content: counter(st) " · "; }
+.plan p { color: var(--muted); font-size: 0.93rem; }
+.plan .goal { color: var(--ink); font-size: 0.88rem; }
+
+/* Questions */
+.questions { margin: 0; padding-left: 1.4rem; display: flex; flex-direction: column; gap: 10px; max-width: 70ch; }
+.questions li::marker { font-family: var(--f-mono); color: var(--human); font-weight: 700; }
+
+footer { border-top: 1px solid var(--line); padding-top: 20px; font-size: 0.85rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 24px; justify-content: space-between; }
+footer a { color: var(--agent); font-weight: 700; letter-spacing: 0.04em; text-decoration: underline; text-underline-offset: 3px; }
+footer a:hover { text-decoration-thickness: 2px; }
+footer a:focus-visible { outline: 2px solid var(--agent); outline-offset: 2px; border-radius: 2px; }
+</style>
+</head>
+<body>
+<main class="wrap">
+
+  <header class="hero">
+    <span class="eyebrow">Пропозиція для СЕО · AISpace · жовтень 2026</span>
+    <h1>AI-штаб школи</h1>
+    <p class="lead">Віртуальна команда AI-агентів щодня збирає дані школи, аналізує їх і приносить вам готові висновки та рішення на погодження. Ви спілкуєтесь з одним помічником у Slack або Telegram. Налаштовувати нічого не потрібно.</p>
+    <ul class="facts">
+      <li><span class="sw agent"></span><span><b>Один канал</b> для вас: месенджер, яким ви вже користуєтесь</span></li>
+      <li><span class="sw agent"></span><span><b>Вісім відділів</b> з AI-агентами</span></li>
+      <li><span class="sw human"></span><span><b>Без вашого «так»</b> назовні нічого не йде</span></li>
+    </ul>
+  </header>
+
+  <section class="section" id="map">
+    <div class="section-head">
+      <span class="eyebrow">Карта</span>
+      <h2>Як влаштований штаб</h2>
+      <p class="prose">Ви ставите питання й погоджуєте рішення. Помічник передає задачі в штаб. Відділи працюють за розкладом, користуються інструментами й даними школи, а результат повертається до вас коротким брифінгом.</p>
+    </div>
+    <figure>
+      <div class="map">
+        <span class="swipe">Схему можна гортати вбік →</span>
+        <div class="scroll">
+          <svg viewBox="0 0 1000 812" role="img" aria-label="Схема AI-штабу: СЕО спілкується з помічником Hermes; помічник передає задачі в штаб Paperclip з восьми відділів; відділи користуються скриптами, Jev і Claude, які читають дані школи; чернетки йдуть на погодження команді школи.">
+            <defs>
+              <marker id="ah-map" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" class="ahead"/>
+              </marker>
+            </defs>
+
+            <!-- Верхній ряд: СЕО -->
+            <g class="n human">
+              <rect x="390" y="14" width="220" height="62" rx="12"/>
+              <text class="t-hl" x="500" y="41" text-anchor="middle">СЕО</text>
+              <text class="t-s" x="500" y="61" text-anchor="middle">вирішує й погоджує</text>
+            </g>
+            <line class="wire" x1="500" y1="77" x2="500" y2="119" marker-start="url(#ah-map)" marker-end="url(#ah-map)"/>
+            <text class="t-lab" x="512" y="102">питання · рішення</text>
+
+            <!-- Другий ряд -->
+            <g class="n plain">
+              <rect x="20" y="120" width="280" height="68" rx="10"/>
+              <text class="t-h" x="36" y="146">Розклад</text>
+              <text class="t-s" x="36" y="165">штаб сам запускає відділи:</text>
+              <text class="t-s" x="36" y="180">щодня, щотижня, щомісяця</text>
+            </g>
+            <g class="n agent">
+              <rect x="350" y="120" width="300" height="68" rx="10"/>
+              <text class="t-h" x="500" y="146" text-anchor="middle">Помічник СЕО · Hermes</text>
+              <text class="t-s" x="500" y="165" text-anchor="middle">у Slack / Telegram: брифінги,</text>
+              <text class="t-s" x="500" y="180" text-anchor="middle">відповіді, погодження</text>
+            </g>
+            <g class="n human">
+              <rect x="700" y="120" width="280" height="68" rx="10"/>
+              <text class="t-h" x="716" y="146">Команда школи</text>
+              <text class="t-s" x="716" y="165">менеджери, куратори, підтримка:</text>
+              <text class="t-s" x="716" y="180">перевіряють і надсилають</text>
+            </g>
+
+            <line class="wire" x1="160" y1="189" x2="160" y2="235" marker-end="url(#ah-map)"/>
+            <text class="t-lab" x="172" y="216">запускає</text>
+            <line class="wire" x1="500" y1="189" x2="500" y2="235" marker-start="url(#ah-map)" marker-end="url(#ah-map)"/>
+            <text class="t-lab" x="512" y="216">задачі · результати</text>
+            <line class="wire" x1="840" y1="235" x2="840" y2="189" marker-end="url(#ah-map)"/>
+            <text class="t-lab" x="828" y="216" text-anchor="end">чернетки на погодження</text>
+
+            <!-- Штаб -->
+            <g class="frame">
+              <rect x="20" y="236" width="960" height="332" rx="14"/>
+              <text class="t-frame" x="40" y="263">ШТАБ · PAPERCLIP</text>
+              <text class="t-s" x="960" y="263" text-anchor="end">відділи, посади, розклад, бюджети, журнал дій</text>
+            </g>
+
+            <g class="n agent">
+              <rect x="34" y="280" width="220" height="128" rx="10"/>
+              <text class="t-h" x="48" y="306">Офіс СЕО</text>
+              <text class="t-a" x="48" y="330">Стратег: тижневий огляд</text>
+              <text class="t-a" x="48" y="348">Фокус: виконання рішень</text>
+              <text class="t-a" x="48" y="366">Радар: новини ніші</text>
+              <text class="t-k" x="48" y="392">щодня 08:00 · пн 09:00</text>
+            </g>
+            <g class="n agent">
+              <rect x="270" y="280" width="220" height="128" rx="10"/>
+              <text class="t-h" x="284" y="306">Продажі</text>
+              <text class="t-a" x="284" y="330">Скоринг лідів</text>
+              <text class="t-a" x="284" y="348">Чернетки листів</text>
+              <text class="t-a" x="284" y="366">Аналіз дзвінків</text>
+              <text class="t-k" x="284" y="392">щодня · звіт щотижня</text>
+            </g>
+            <g class="n agent">
+              <rect x="506" y="280" width="220" height="128" rx="10"/>
+              <text class="t-h" x="520" y="306">Маркетинг</text>
+              <text class="t-a" x="520" y="330">Аналіз реклами</text>
+              <text class="t-a" x="520" y="348">Слабкості конкурентів</text>
+              <text class="t-a" x="520" y="366">Контент-план</text>
+              <text class="t-k" x="520" y="392">щотижня · щомісяця</text>
+            </g>
+            <g class="n agent">
+              <rect x="742" y="280" width="220" height="128" rx="10"/>
+              <text class="t-h" x="756" y="306">Клієнтський досвід</text>
+              <text class="t-a" x="756" y="330">Розбір відгуків і NPS</text>
+              <text class="t-a" x="756" y="348">Гаряча база клієнтів</text>
+              <text class="t-a" x="756" y="366">Помічник підтримки</text>
+              <text class="t-k" x="756" y="392">щодня · терміново одразу</text>
+            </g>
+
+            <g class="n agent">
+              <rect x="34" y="424" width="220" height="128" rx="10"/>
+              <text class="t-h" x="48" y="450">Навчання і продукт</text>
+              <text class="t-a" x="48" y="474">Де відпадають студенти</text>
+              <text class="t-a" x="48" y="492">Перевірка ДЗ</text>
+              <text class="t-a" x="48" y="510">Ідеї нових курсів</text>
+              <text class="t-k" x="48" y="536">щотижня по потоках</text>
+            </g>
+            <g class="n agent">
+              <rect x="270" y="424" width="220" height="128" rx="10"/>
+              <text class="t-h" x="284" y="450">Фінанси</text>
+              <text class="t-a" x="284" y="474">Пульс грошей</text>
+              <text class="t-a" x="284" y="492">Рух коштів і P&amp;L</text>
+              <text class="t-a" x="284" y="510">Аномалії оплат</text>
+              <text class="t-k" x="284" y="536">щодня · щомісяця</text>
+            </g>
+            <g class="n agent">
+              <rect x="506" y="424" width="220" height="128" rx="10"/>
+              <text class="t-h" x="520" y="450">Ринок і конкуренти</text>
+              <text class="t-a" x="520" y="474">Досьє конкурентів</text>
+              <text class="t-a" x="520" y="492">3 ідеї зростання</text>
+              <text class="t-a" x="520" y="510">Тренди AI-освіти</text>
+              <text class="t-k" x="520" y="536">щотижня</text>
+            </g>
+            <g class="n agent">
+              <rect x="742" y="424" width="220" height="128" rx="10"/>
+              <text class="t-h" x="756" y="450">Операції і команда</text>
+              <text class="t-a" x="756" y="474">Контроль домовленостей</text>
+              <text class="t-a" x="756" y="492">Найм кураторів</text>
+              <text class="t-a" x="756" y="510">Регламенти й база знань</text>
+              <text class="t-k" x="756" y="536">після зустрічей · щотижня</text>
+            </g>
+
+            <!-- Інструменти -->
+            <line class="wire" x1="165" y1="569" x2="165" y2="615" marker-end="url(#ah-map)"/>
+            <line class="wire" x1="500" y1="569" x2="500" y2="615" marker-end="url(#ah-map)"/>
+            <line class="wire" x1="835" y1="569" x2="835" y2="615" marker-end="url(#ah-map)"/>
+            <text class="t-lab" x="512" y="596">агенти користуються інструментами</text>
+
+            <g class="n tool">
+              <rect x="30" y="616" width="270" height="70" rx="10"/>
+              <text class="t-h" x="44" y="640">Скрипти</text>
+              <text class="t-s" x="44" y="659">збирають дані, прибирають</text>
+              <text class="t-s" x="44" y="674">імена, рахують усі цифри</text>
+            </g>
+            <line class="wire" x1="301" y1="651" x2="364" y2="651" marker-end="url(#ah-map)"/>
+            <text class="t-lab" x="332" y="643" text-anchor="middle">тексти</text>
+            <g class="n tool">
+              <rect x="365" y="616" width="270" height="70" rx="10"/>
+              <text class="t-h" x="379" y="640">Jev · сортувальник</text>
+              <text class="t-s" x="379" y="659">оцінює тисячі відгуків</text>
+              <text class="t-s" x="379" y="674">і заявок за секунди</text>
+            </g>
+            <line class="wire" x1="636" y1="651" x2="699" y2="651" marker-end="url(#ah-map)"/>
+            <text class="t-lab" x="667" y="643" text-anchor="middle">важливе</text>
+            <g class="n tool">
+              <rect x="700" y="616" width="270" height="70" rx="10"/>
+              <text class="t-h" x="714" y="640">Claude · аналітик</text>
+              <text class="t-s" x="714" y="659">думає над відібраним: висновки,</text>
+              <text class="t-s" x="714" y="674">рекомендації, чернетки листів</text>
+            </g>
+
+            <!-- Дані -->
+            <line class="wire" x1="165" y1="729" x2="165" y2="687" marker-end="url(#ah-map)"/>
+            <text class="t-lab" x="177" y="712">лише читання</text>
+            <g class="n data">
+              <rect x="30" y="730" width="940" height="66" rx="10"/>
+              <text class="t-h" x="46" y="756">Дані школи</text>
+              <text class="t-s" x="46" y="777">CRM і заявки · оплати · платформа навчання · відгуки й чати · реклама · Notion / Drive</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+      <ul class="legend" aria-label="Позначення">
+        <li><span class="sw human"></span>Людина: вирішує й погоджує</li>
+        <li><span class="sw agent"></span>AI-агент</li>
+        <li><span class="sw tool"></span>Інструмент агентів</li>
+        <li><span class="sw data"></span>Дані школи</li>
+      </ul>
+      <figcaption>Єдина точка контакту для вас — помічник. Усі листи клієнтам, публікації й зміни в CRM проходять через людину: менеджера, куратора або вас.</figcaption>
+    </figure>
+  </section>
+
+  <section class="section" id="roles">
+    <div class="section-head">
+      <span class="eyebrow">Хто є хто</span>
+      <h2>П'ять ролей у системі</h2>
+    </div>
+    <ul class="roles">
+      <li>
+        <div class="role-name"><span class="sw agent"></span><span>Помічник СЕО<small>Hermes</small></span></div>
+        <p>Живе у вашому месенджері й пам'ятає ваші пріоритети. Надсилає брифінги, відповідає на питання людською мовою, приносить рішення на погодження.</p>
+      </li>
+      <li>
+        <div class="role-name"><span class="sw agent"></span><span>Штаб<small>Paperclip</small></span></div>
+        <p>Офіс для агентів: відділи, посади, розклад, бюджет на кожного агента і журнал усіх дій. Тут видно, хто що зробив і скільки це коштувало.</p>
+      </li>
+      <li>
+        <div class="role-name"><span class="sw tool"></span><span>Сортувальник<small>Jev</small></span></div>
+        <p>За секунди й копійки оцінює тисячі відгуків, заявок і повідомлень: хто хоче купити наступний курс, хто незадоволений, хто пише від імені компанії.</p>
+      </li>
+      <li>
+        <div class="role-name"><span class="sw tool"></span><span>Аналітик<small>Claude</small></span></div>
+        <p>Думає лише над відібраним важливим: пише висновки, рекомендації та чернетки листів. Так глибокий аналіз не витрачається на тисячі дрібниць.</p>
+      </li>
+      <li>
+        <div class="role-name"><span class="sw tool"></span><span>Скрипти<small>калькулятор</small></span></div>
+        <p>Рахують усі цифри з даних школи, тому числа точні й однакові щоразу. Перед відправкою текстів у зовнішні сервіси прибирають імена, email і телефони.</p>
+      </li>
+    </ul>
+  </section>
+
+  <section class="section" id="departments">
+    <div class="section-head">
+      <span class="eyebrow">Відділи</span>
+      <h2>Вісім відділів і їхні агенти</h2>
+      <p class="prose">Запускаємо поступово: спершу Офіс СЕО і Клієнтський досвід, далі решта. Під кожним відділом — як часто він працює і що отримуєте ви.</p>
+    </div>
+    <div class="depts">
+      <article class="dept">
+        <div class="dept-top"><span class="tag">старт</span><h3>Офіс СЕО</h3></div>
+        <ul class="agents">
+          <li><b>Стратег</b>Огляд «що змінилось, чому, що робити». Рішення готує як варіанти, рекомендацію й ризики.</li>
+          <li><b>Фокус і рішення</b>Нагадує про погоджені рішення, які «зависли», і питає, що заважає.</li>
+          <li><b>Радар</b>До 5 новин ніші й технологій на день, які стосуються школи.</li>
+        </ul>
+        <div class="dept-foot"><span class="k">щодня 08:00 · пн 09:00</span><span class="you">Ви: брифінг, тижневий огляд, рішення</span></div>
+      </article>
+      <article class="dept">
+        <div class="dept-top"><span class="tag">етап 2</span><h3>Продажі</h3></div>
+        <ul class="agents">
+          <li><b>Скоринг лідів</b>Оцінює кожну заявку: чи наш клієнт, чи готовий купити, наскільки терміново.</li>
+          <li><b>Чернетки листів</b>Персональні листи «через турботу»: проблема клієнта і корисне рішення. Надсилає менеджер.</li>
+          <li><b>Аналіз дзвінків</b>Чи домовились про наступний крок, заперечення, причини відмов.</li>
+        </ul>
+        <div class="dept-foot"><span class="k">щодня · звіт щотижня</span><span class="you">Ви: воронка і причини відмов</span></div>
+      </article>
+      <article class="dept">
+        <div class="dept-top"><span class="tag">етап 3</span><h3>Маркетинг</h3></div>
+        <ul class="agents">
+          <li><b>Аналіз реклами</b>Хук, оффер, формат і відповідність лендингу у ваших і конкурентних креативах.</li>
+          <li><b>Слабкості конкурентів</b>Тисячі відгуків про конкурентів перетворюються на карту болей ринку й ідеї офферів.</li>
+          <li><b>Контент-план</b>Теми з реальних питань аудиторії.</li>
+        </ul>
+        <div class="dept-foot"><span class="k">щотижня · щомісяця</span><span class="you">Ви: що працює в рекламі й ідеї офферів</span></div>
+      </article>
+      <article class="dept">
+        <div class="dept-top"><span class="tag">старт</span><h3>Клієнтський досвід</h3></div>
+        <ul class="agents">
+          <li><b>Розбір відгуків</b>Кожен відгук, NPS і звернення: тема, настрій, ризик відтоку, запит повернення.</li>
+          <li><b>Гаряча база</b>Хто хоче наступний курс, хто з компанії, хто готовий рекомендувати школу.</li>
+          <li><b>Помічник підтримки</b>Готує відповідь, інший агент її перевіряє, менеджер надсилає, редагує або відхиляє.</li>
+        </ul>
+        <div class="dept-foot"><span class="k">щодня · негатив одразу</span><span class="you">Ви: гарячі клієнти й ризики</span></div>
+      </article>
+      <article class="dept">
+        <div class="dept-top"><span class="tag">етап 3</span><h3>Навчання і продукт</h3></div>
+        <ul class="agents">
+          <li><b>Навчальна аналітика</b>Де студенти відпадають, які модулі найслабші.</li>
+          <li><b>Перевірка ДЗ</b>Первинна оцінка за рубрикою і сигнал куратору «студент застряг».</li>
+          <li><b>Ідеї курсів</b>Що просять студенти. Рахуємо людей, а не повідомлення.</li>
+        </ul>
+        <div class="dept-foot"><span class="k">щотижня по потоках</span><span class="you">Ви: якість потоків і ідеї продуктів</span></div>
+      </article>
+      <article class="dept">
+        <div class="dept-top"><span class="tag">етап 3</span><h3>Фінанси</h3></div>
+        <ul class="agents">
+          <li><b>Пульс грошей</b>Виручка й оплати щодня в брифінгу.</li>
+          <li><b>Рух коштів і P&amp;L</b>За вашими правилами обліку. Щомісяця: де і скільки можна заощадити.</li>
+          <li><b>Аномалії</b>Падіння оплат, сплеск повернень, перевитрата реклами.</li>
+        </ul>
+        <div class="dept-foot"><span class="k">щодня · щомісяця</span><span class="you">Ви: гроші й конкретні кроки економії</span></div>
+      </article>
+      <article class="dept">
+        <div class="dept-top"><span class="tag">етап 3</span><h3>Ринок і конкуренти</h3></div>
+        <ul class="agents">
+          <li><b>Досьє конкурентів</b>Ціни, програми, акції, відгуки. Що змінилось з минулого тижня.</li>
+          <li><b>Ідеї зростання</b>Три ідеї з доказами. Після вашого погодження стають задачами відділів.</li>
+          <li><b>Тренди</b>Що відбувається на ринку AI-освіти.</li>
+        </ul>
+        <div class="dept-foot"><span class="k">щотижня</span><span class="you">Ви: дайджест і 3 ідеї на вибір</span></div>
+      </article>
+      <article class="dept">
+        <div class="dept-top"><span class="tag">етап 3</span><h3>Операції і команда</h3></div>
+        <ul class="agents">
+          <li><b>Контроль домовленостей</b>Із запису зустрічі: задачі, відповідальні, терміни. Звіт перед наступною зустріччю.</li>
+          <li><b>Найм</b>Первинний відбір кураторів і викладачів, рейтинг з поясненням.</li>
+          <li><b>Регламенти</b>База знань для команди завжди актуальна.</li>
+        </ul>
+        <div class="dept-foot"><span class="k">після зустрічей · щотижня</span><span class="you">Ви: що виконано, що зависло</span></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" id="flow">
+    <div class="section-head">
+      <span class="eyebrow">Як виконується задача</span>
+      <h2>Один ранок відділу «Клієнтський досвід»</h2>
+      <p class="prose">Кожен рядок — крок, кожна колонка — хто його робить. До 08:00 усе відбувається без участі людей. Листи клієнтам надсилає менеджер після перевірки.</p>
+    </div>
+    <figure>
+      <div class="map">
+        <span class="swipe">Схему можна гортати вбік →</span>
+        <div class="scroll">
+          <svg viewBox="0 0 1000 650" role="img" aria-label="Послідовність одного ранку: о 06:00 розклад запускає агента; скрипт забирає нові відгуки й знеособлює їх; Jev оцінює кожен відгук; код рахує гарячість, Claude перевіряє сумнівні; агент записує гарячу базу в CRM і готує чернетки; о 08:00 помічник надсилає брифінг СЕО; СЕО читає й погоджує; вдень менеджер перевіряє й надсилає листи.">
+            <defs>
+              <marker id="ah-flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                <path d="M0,0 L10,5 L0,10 z" class="ahead"/>
+              </marker>
+            </defs>
+
+            <!-- Доріжки -->
+            <rect class="lane" x="82" y="46" width="148" height="594" rx="8"/>
+            <rect class="lane" x="386" y="46" width="148" height="594" rx="8"/>
+            <rect class="lane" x="690" y="46" width="148" height="594" rx="8"/>
+
+            <text class="t-k" x="12" y="32">час</text>
+            <text class="t-col c-data" x="156" y="32" text-anchor="middle">Дані школи</text>
+            <text class="t-col c-tool" x="308" y="32" text-anchor="middle">Інструменти</text>
+            <text class="t-col c-agent" x="460" y="32" text-anchor="middle">Штаб · агент</text>
+            <text class="t-col c-human" x="612" y="32" text-anchor="middle">Команда школи</text>
+            <text class="t-col c-agent" x="764" y="32" text-anchor="middle">Помічник</text>
+            <text class="t-col c-human" x="916" y="32" text-anchor="middle">Ви, СЕО</text>
+
+            <text class="t-k" x="12" y="90">06:00</text>
+            <text class="t-k" x="12" y="154">06:01</text>
+            <text class="t-k" x="12" y="218">06:01</text>
+            <text class="t-k" x="12" y="282">06:02</text>
+            <text class="t-k" x="12" y="346">06:05</text>
+            <text class="t-k" x="12" y="410">06:20</text>
+            <text class="t-k" x="12" y="474">08:00</text>
+            <text class="t-k" x="12" y="538">08:10</text>
+            <text class="t-k" x="12" y="602">вдень</text>
+
+            <!-- 1 -->
+            <g class="n agent">
+              <rect x="392" y="62" width="136" height="48" rx="8"/>
+              <text class="t-step" x="402" y="78">Розклад запускає</text>
+              <text class="t-step" x="402" y="91">агента «Аналітик</text>
+              <text class="t-step" x="402" y="104">відгуків»</text>
+            </g>
+            <!-- 2 -->
+            <g class="n data">
+              <rect x="88" y="126" width="136" height="48" rx="8"/>
+              <text class="t-step" x="98" y="142">Нові відгуки, NPS,</text>
+              <text class="t-step" x="98" y="155">повідомлення</text>
+              <text class="t-step" x="98" y="168">з чатів потоків</text>
+            </g>
+            <!-- 3 -->
+            <g class="n tool">
+              <rect x="240" y="190" width="136" height="48" rx="8"/>
+              <text class="t-step" x="250" y="206">Скрипт прибирає</text>
+              <text class="t-step" x="250" y="219">імена, email</text>
+              <text class="t-step" x="250" y="232">і телефони</text>
+            </g>
+            <!-- 4 -->
+            <g class="n tool">
+              <rect x="240" y="254" width="136" height="48" rx="8"/>
+              <text class="t-step" x="250" y="270">Jev оцінює кожен</text>
+              <text class="t-step" x="250" y="283">відгук: апсейл,</text>
+              <text class="t-step" x="250" y="296">B2B, ризик відтоку</text>
+            </g>
+            <!-- 5 -->
+            <g class="n tool">
+              <rect x="240" y="318" width="136" height="48" rx="8"/>
+              <text class="t-step" x="250" y="334">Код рахує</text>
+              <text class="t-step" x="250" y="347">«гарячість», Claude</text>
+              <text class="t-step" x="250" y="360">перевіряє сумнівні</text>
+            </g>
+            <!-- 6 -->
+            <g class="n agent">
+              <rect x="392" y="382" width="136" height="48" rx="8"/>
+              <text class="t-step" x="402" y="398">Гаряча база в CRM</text>
+              <text class="t-step" x="402" y="411">+ чернетки листів</text>
+              <text class="t-step" x="402" y="424">для менеджерів</text>
+            </g>
+            <!-- 7 -->
+            <g class="n agent">
+              <rect x="696" y="446" width="136" height="48" rx="8"/>
+              <text class="t-step" x="706" y="462">Ранковий брифінг:</text>
+              <text class="t-step" x="706" y="475">до 5 пунктів</text>
+              <text class="t-step" x="706" y="488">із джерелами цифр</text>
+            </g>
+            <!-- 8 -->
+            <g class="n human">
+              <rect x="848" y="510" width="136" height="48" rx="8"/>
+              <text class="t-step" x="858" y="526">Ви читаєте,</text>
+              <text class="t-step" x="858" y="539">погоджуєте</text>
+              <text class="t-step" x="858" y="552">або питаєте</text>
+            </g>
+            <!-- 9 -->
+            <g class="n human">
+              <rect x="544" y="574" width="136" height="48" rx="8"/>
+              <text class="t-step" x="554" y="590">Менеджер править,</text>
+              <text class="t-step" x="554" y="603">погоджує</text>
+              <text class="t-step" x="554" y="616">і надсилає</text>
+            </g>
+
+            <!-- Стрілки -->
+            <polyline class="wire" points="460,110 460,118 156,118 156,125" marker-end="url(#ah-flow)"/>
+            <polyline class="wire" points="156,174 156,182 308,182 308,189" marker-end="url(#ah-flow)"/>
+            <polyline class="wire" points="308,238 308,253" marker-end="url(#ah-flow)"/>
+            <polyline class="wire" points="308,302 308,317" marker-end="url(#ah-flow)"/>
+            <polyline class="wire" points="308,366 308,374 460,374 460,381" marker-end="url(#ah-flow)"/>
+            <polyline class="wire" points="468,430 468,438 764,438 764,445" marker-end="url(#ah-flow)"/>
+            <text class="t-lab" x="616" y="433" text-anchor="middle">підсумок</text>
+            <polyline class="wire" points="764,494 764,502 916,502 916,509" marker-end="url(#ah-flow)"/>
+            <polyline class="wire" points="452,430 452,566 612,566 612,573" marker-end="url(#ah-flow)"/>
+            <text class="t-lab" x="532" y="561" text-anchor="middle">чернетки</text>
+          </svg>
+        </div>
+      </div>
+      <figcaption>Агент сам рахує цифри й нічого не надсилає клієнтам. Його результат — список у CRM, чернетки для менеджера і пункт у вашому брифінгу.</figcaption>
+    </figure>
+  </section>
+
+  <section class="section" id="rhythm">
+    <div class="section-head">
+      <span class="eyebrow">Ваш ритм</span>
+      <h2>Що і коли ви отримуєте</h2>
+    </div>
+    <div class="rhythm">
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Коли</th><th>Що</th><th>Як виглядає</th></tr></thead>
+          <tbody>
+            <tr><td>щодня 08:00</td><td>Брифінг</td><td>До 5 пунктів. Кожен: що сталося, чому важливо, що радимо. Цифри з джерелом.</td></tr>
+            <tr><td>одразу</td><td>Алерт</td><td>Лише критичне: падіння оплат, хвиля негативу, запит від компанії, перевитрата бюджету.</td></tr>
+            <tr><td>пн 09:00</td><td>Тижневий огляд</td><td>Що змінилось, чому, що радимо, які рішення чекають на вас.</td></tr>
+            <tr><td>1 число</td><td>Місячний звіт</td><td>Фінанси, воронка, якість навчання, ринок.</td></tr>
+            <tr><td>будь-коли</td><td>Ваше питання</td><td>«Скільки заробили на потоці X?», «Чому впали продажі?»</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="chat" aria-label="Приклад ранкового брифінгу">
+        <div class="chat-head">
+          <div class="avatar" aria-hidden="true">П</div>
+          <div><b>Помічник СЕО</b><span>сьогодні, 08:00</span></div>
+        </div>
+        <div class="bubble">
+          <p>Доброго ранку. Головне за вчора:</p>
+          <ol>
+            <li>Оплати: <span class="num">41 200 грн</span>, на <span class="num">12%</span> нижче звичайного вівторка. Розсилка о 10:00 не відправилась. Радимо перезапустити сьогодні.</li>
+            <li><span class="num">27</span> студентів готові до наступного курсу. Список у CRM, чернетки листів у менеджера.</li>
+            <li><span class="num">4</span> запити від компаній на корпоративне навчання. Призначити окремого менеджера?</li>
+            <li><span class="num">3</span> студенти просять повернення коштів. Куратор уже в курсі.</li>
+            <li>Найчастіший запит тижня: курс з AI-агентів для бізнесу (<span class="num">41</span> людина).</li>
+          </ol>
+          <div class="actions" aria-label="Варіанти відповіді"><span>Погодити</span><span>Відхилити</span><span>Обговорити</span></div>
+        </div>
+        <span class="note">Приклад. Цифри умовні.</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="rules">
+    <div class="section-head">
+      <span class="eyebrow">Правила</span>
+      <h2>Що захищає школу</h2>
+    </div>
+    <ul class="rules">
+      <li><span><b>Назовні — лише з погодженням.</b> Листи клієнтам, публікації, гроші й зміни в CRM ідуть тільки після «так» людини.</span></li>
+      <li><span><b>Цифри — з даних.</b> Кожне число має джерело. Якщо даних немає, агент так і пише.</span></li>
+      <li><span><b>Дані студентів знеособлені.</b> У зовнішні сервіси йде текст без імен, email і телефонів.</span></li>
+      <li><span><b>Система належить школі.</b> Працює на акаунтах і в хмарі школи. Доступ розробників тимчасовий.</span></li>
+      <li><span><b>Бюджет на кожного агента.</b> На 80% — попередження, на 100% — автопауза. Усі дії записуються в журнал.</span></li>
+      <li><span><b>Не більше 5 пунктів за раз.</b> Кожен висновок закінчується дією або питанням до вас. Деталі — на запит.</span></li>
+    </ul>
+  </section>
+
+  <section class="section" id="plan">
+    <div class="section-head">
+      <span class="eyebrow">План запуску</span>
+      <h2>Від знайомства до повного штабу за 14 тижнів</h2>
+    </div>
+    <ol class="plan">
+      <li>
+        <span class="when">тиждень 1</span>
+        <h3>Знайомство</h3>
+        <p>Розмова з вами, доступи до систем, профіль школи: продукти, клієнти, визначення, хто що погоджує.</p>
+      </li>
+      <li>
+        <span class="when">тижні 2–5</span>
+        <h3>Перша користь</h3>
+        <p>Щоденний брифінг і гаряча база з відгуків.</p>
+        <p class="goal">Мета: ви читаєте брифінг щодня і хоча б раз на тиждень дієте за порадою.</p>
+      </li>
+      <li>
+        <span class="when">тижні 6–9</span>
+        <h3>Штаб</h3>
+        <p>Продажі й підтримка, тижневий огляд, алерти, погодження в месенджері.</p>
+      </li>
+      <li>
+        <span class="when">тижні 10–14</span>
+        <h3>Уся структура</h3>
+        <p>Фінанси, маркетинг, навчання і продукт, ринок, операції.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section class="section" id="questions">
+    <div class="section-head">
+      <span class="eyebrow">Для старту</span>
+      <h2>Що потрібно від вас</h2>
+    </div>
+    <ol class="questions">
+      <li>Які системи використовує школа: платформа навчання, CRM, оплати, розсилки, реклама?</li>
+      <li>Де вам зручніше отримувати брифінги: Slack чи Telegram?</li>
+      <li>Які 3–5 рішень ви приймаєте найчастіше і де вам найбільше бракує даних?</li>
+      <li>Хто в команді отримуватиме задачі від агентів: менеджери продажів, куратори, підтримка?</li>
+      <li>Де розгортаємо систему: хмара школи (Google Cloud, AWS, Azure) чи власний сервер?</li>
+    </ol>
+  </section>
+
+  <footer>
+    <span>Підготовлено <a href="https://aispace.com.ua" target="_blank" rel="noopener">AISPACE</a></span>
+    <span>05.10.2026 · для ознайомлення</span>
+  </footer>
+
+</main>
+</body>
+</html>

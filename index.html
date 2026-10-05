@@ -5,21 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>AI-штаб школи</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="description" content="Як працює AI-штаб школи: помічник СЕО в месенджері, штаб агентів, вісім відділів, приклад виконання задачі, правила і план запуску.">
+<meta name="description" content="Ви пишете одному AI-помічнику звичайною мовою, а над задачею працює ціла команда агентів у восьми відділах школи.">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="uk_UA">
 <meta property="og:title" content="AI-штаб школи">
-<meta property="og:description" content="Віртуальна команда AI-агентів, яка щодня приносить СЕО готові висновки й рішення на погодження. Підготовлено AISPACE.">
+<meta property="og:description" content="Ви пишете одному AI-помічнику звичайною мовою, а над задачею працює ціла команда агентів. Підготовлено AISPACE.">
 <meta property="og:url" content="https://ros-ai-space.github.io/ai-shtab/">
 <meta property="og:site_name" content="AISPACE">
 <meta property="og:image" content="https://ros-ai-space.github.io/ai-shtab/og-image.jpg?v=1">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="AI-штаб школи: помічник СЕО, штаб із восьми відділів AI-агентів, брифінг щодня о 08:00">
+<meta property="og:image:alt" content="AI-штаб школи: AI-помічник СЕО, штаб із восьми відділів AI-агентів, брифінг щодня о 08:00">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="AI-штаб школи">
-<meta name="twitter:description" content="Віртуальна команда AI-агентів, яка щодня приносить СЕО готові висновки й рішення на погодження. Підготовлено AISPACE.">
+<meta name="twitter:description" content="Ви пишете одному AI-помічнику звичайною мовою, а над задачею працює ціла команда агентів. Підготовлено AISPACE.">
 <meta name="twitter:image" content="https://ros-ai-space.github.io/ai-shtab/og-image.jpg?v=1">
 <meta name="theme-color" content="#17707A">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2317707A'/%3E%3Crect x='7' y='7' width='8' height='8' rx='2' fill='%23FBEEDD'/%3E%3Crect x='17' y='7' width='8' height='8' rx='2' fill='%23E0EFF0'/%3E%3Crect x='7' y='17' width='8' height='8' rx='2' fill='%23E0EFF0'/%3E%3Crect x='17' y='17' width='8' height='8' rx='2' fill='%23E0EFF0'/%3E%3C/svg%3E">
@@ -118,6 +118,95 @@ p { margin: 0; }
 .sw.agent { background: var(--agent-soft); border-color: var(--agent); }
 .sw.tool { background: var(--tool-soft); border-color: var(--tool); }
 .sw.data { background: var(--surface); border-color: var(--muted); border-style: dashed; }
+
+[hidden] { display: none !important; }
+
+/* Hero: ключова фраза і три кроки */
+.hook { font-family: var(--f-display); font-weight: 500; font-size: clamp(1.25rem, 1rem + 1.2vw, 1.85rem); line-height: 1.25; text-wrap: balance; max-width: 32ch; }
+.hook em { font-style: normal; color: var(--agent); }
+.steps { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); counter-reset: s; }
+@media (min-width: 760px) { .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.steps li { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.steps li::before {
+  counter-increment: s; content: counter(s);
+  width: 26px; height: 26px; border-radius: 7px; display: grid; place-items: center; margin-bottom: 4px;
+  font-family: var(--f-mono); font-size: 0.8rem; font-weight: 700;
+  background: var(--agent-soft); color: var(--agent); border: 1.5px solid var(--agent);
+}
+.steps li.you::before { background: var(--human-soft); color: var(--human); border-color: var(--human); }
+.steps b { font-size: 1.02rem; }
+.steps p { color: var(--muted); font-size: 0.93rem; }
+
+/* Демо: чат + що відбувається в штабі */
+.demo-bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.tab {
+  font: 600 0.9rem var(--f-body); color: var(--ink);
+  padding: 8px 14px; border-radius: 999px; cursor: pointer;
+  border: 1.5px solid var(--line); background: var(--surface);
+}
+.tab[aria-pressed="true"] { border-color: var(--agent); background: var(--agent-soft); color: var(--agent); }
+.play {
+  font: 700 0.92rem var(--f-body); color: var(--surface);
+  padding: 9px 18px; border-radius: 999px; border: none; cursor: pointer;
+  background: var(--agent);
+}
+.tab:focus-visible, .play:focus-visible { outline: 2px solid var(--agent); outline-offset: 3px; }
+.scn { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 900px) { .scn { grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr); } }
+.phone { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.msgs { display: flex; flex-direction: column; gap: 10px; }
+.msg { max-width: 90%; padding: 10px 14px; font-size: 0.92rem; line-height: 1.5; }
+.msg.me { align-self: flex-end; background: var(--human-soft); border: 1px solid var(--human); border-radius: 14px 14px 4px 14px; }
+.msg.bot { align-self: flex-start; background: var(--lane); border-radius: 4px 14px 14px 14px; }
+.msg b { font-variant-numeric: tabular-nums; }
+.msg time { display: block; margin-top: 4px; font-family: var(--f-mono); font-size: 0.68rem; color: var(--muted); text-align: right; }
+.msg .actions { margin-top: 10px; }
+.sys { align-self: center; text-align: center; font-family: var(--f-mono); font-size: 0.72rem; color: var(--agent); background: var(--agent-soft); border-radius: 999px; padding: 5px 12px; }
+.typing { display: none; align-self: flex-start; background: var(--lane); border-radius: 4px 14px 14px 14px; padding: 12px 14px; }
+.typing i { display: inline-block; width: 6px; height: 6px; margin-right: 4px; border-radius: 50%; background: var(--muted); animation: blink 1s infinite; }
+.typing i:nth-child(2) { animation-delay: 0.2s; }
+.typing i:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink { 0%, 80%, 100% { opacity: 0.25; } 40% { opacity: 1; } }
+.backstage { background: var(--frame); border: 1.5px solid var(--agent); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.bs-head { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-family: var(--f-mono); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--agent); }
+.bs-head span:last-child { color: var(--muted); font-weight: 500; letter-spacing: 0.04em; text-transform: none; }
+.strip { display: flex; flex-wrap: wrap; gap: 6px; }
+.strip span { font-size: 0.75rem; font-weight: 600; padding: 4px 9px; border-radius: 7px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); transition: background 0.3s, color 0.3s, border-color 0.3s; }
+.strip span.on { border-color: var(--agent); background: var(--agent-soft); color: var(--agent); }
+.strip span.hum.on { border-color: var(--human); background: var(--human-soft); color: var(--human); }
+.tasks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.task { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 3px 10px; }
+.task .who, .task .from, .task .res { grid-column: 1 / -1; }
+.task .who { font-family: var(--f-mono); font-size: 0.7rem; font-weight: 700; color: var(--agent); }
+.task.hum .who { color: var(--human); }
+.task .from { font-family: var(--f-mono); font-size: 0.68rem; color: var(--tool); }
+.task .what { font-size: 0.88rem; }
+.task .st { font-family: var(--f-mono); font-size: 0.7rem; white-space: nowrap; color: var(--agent); }
+.task .st .busy { display: none; color: var(--muted); }
+.task .res { font-size: 0.86rem; font-weight: 700; }
+.step { transition: opacity 0.35s ease, transform 0.35s ease; }
+.anim .step { opacity: 0; transform: translateY(6px); }
+.anim .step.on { opacity: 1; transform: none; }
+.anim .typing.on { display: block; }
+.anim .task:not(.done) .st .busy { display: inline; }
+.anim .task:not(.done) .st .ok { display: none; }
+.anim .task:not(.done) .res { visibility: hidden; }
+.anim .task:not(.done) { border-color: var(--agent); }
+.asks { display: flex; flex-direction: column; gap: 12px; }
+.ask-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.ask-list li { font-size: 0.92rem; padding: 8px 14px; border-radius: 14px 14px 4px 14px; background: var(--human-soft); border: 1px solid var(--human); }
+@media (prefers-reduced-motion: reduce) {
+  .step, .strip span { transition: none; }
+  .typing i { animation: none; }
+}
+
+/* Як читати карту */
+.walk { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.walk li { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 12px; color: var(--muted); max-width: 72ch; }
+.sw.plain { background: var(--surface); border-color: var(--muted); }
+.walk li .sw { margin-top: 6px; }
+.walk b { color: var(--ink); }
 
 /* Figures */
 figure { margin: 0; display: flex; flex-direction: column; gap: 12px; }
@@ -303,25 +392,149 @@ footer a:focus-visible { outline: 2px solid var(--agent); outline-offset: 2px; b
   <header class="hero">
     <span class="eyebrow">Пропозиція для СЕО · AISpace · жовтень 2026</span>
     <h1>AI-штаб школи</h1>
-    <p class="lead">Віртуальна команда AI-агентів щодня збирає дані школи, аналізує їх і приносить вам готові висновки та рішення на погодження. Ви спілкуєтесь з одним помічником у Slack або Telegram. Налаштовувати нічого не потрібно.</p>
-    <ul class="facts">
-      <li><span class="sw agent"></span><span><b>Один канал</b> для вас: месенджер, яким ви вже користуєтесь</span></li>
-      <li><span class="sw agent"></span><span><b>Вісім відділів</b> з AI-агентами</span></li>
-      <li><span class="sw human"></span><span><b>Без вашого «так»</b> назовні нічого не йде</span></li>
-    </ul>
+    <p class="hook">Ви пишете своєму AI-помічнику. <em>Працює ціла команда.</em></p>
+    <p class="lead">Уявіть, що у вас є власний AI-помічник, з яким можна листуватися в Slack / Telegram звичайною мовою, як із колегою. Ви ставите йому задачу або питання. Він сам розбиває задачу на частини й роздає їх AI-агентам, віртуальним працівникам у відділах продажів, маркетингу, фінансів, навчання та інших. Потім збирає їхні результати й повертається до вас із готовим рішенням. А щоранку о 08:00 сам, без вашого запиту, надсилає головне за добу.</p>
+    <ol class="steps">
+      <li class="you"><b>Ви пишете</b><p>Звичайною мовою: задачу, питання або просто «що з продажами?». Без команд і налаштувань.</p></li>
+      <li><b>Помічник роздає задачі</b><p>AI-агентам у відділах продажів, маркетингу, фінансів, навчання. Вони працюють паралельно й передають результати одне одному.</p></li>
+      <li class="you"><b>Ви отримуєте рішення</b><p>Коротко, з цифрами й порадою. Лишається натиснути «Погодити».</p></li>
+    </ol>
   </header>
+
+  <section class="section" id="demo">
+    <div class="section-head">
+      <span class="eyebrow">Як це виглядає</span>
+      <h2>Ви пишете в чат, а над задачею вже працює штаб</h2>
+      <p class="prose">Ліворуч ваш чат із помічником, праворуч те, що в цей час відбувається в штабі (на телефоні вони йдуть одне під одним). Оберіть приклад і натисніть «Показати в дії».</p>
+    </div>
+
+    <div class="demo-bar">
+      <div class="tabs" aria-label="Приклади">
+        <button class="tab" type="button" id="tab-task" aria-pressed="true" aria-controls="scn-task">Поставити задачу</button>
+        <button class="tab" type="button" id="tab-ask" aria-pressed="false" aria-controls="scn-ask">Запитати</button>
+        <button class="tab" type="button" id="tab-alert" aria-pressed="false" aria-controls="scn-alert">Помічник пише першим</button>
+      </div>
+      <button class="play" type="button" id="play">▶ Показати в дії</button>
+    </div>
+
+    <!-- Приклад 1: задача -->
+    <div class="scn" id="scn-task">
+      <div class="phone">
+        <div class="chat-head"><div class="avatar" aria-hidden="true">AI</div><div><b>AI-помічник</b><span>Telegram · онлайн</span></div></div>
+        <div class="msgs">
+          <div class="msg me step" data-at="0">Підготуй пропозицію для тих, хто цього місяця закінчив базовий курс. Хочу до п'ятниці запустити продажі просунутого.<time>08:42</time></div>
+          <div class="typing" data-at="500" data-hide="1300" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div class="msg bot step" data-at="1300">Прийнято. Розбиваю на частини й передаю відділам. Повернуся з результатом.<time>08:42</time></div>
+          <div class="typing" data-at="5400" data-hide="6100" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div class="msg bot step" data-at="6100">Готово. Цього місяця базовий курс закінчили <b>27</b> студентів, <b>19</b> із них готові купити далі. Для них у CRM уже лежать персональні листи, є оффер і два варіанти тексту. Прогноз: близько <b>96 000 грн</b>, якщо купить кожен третій. Запускаємо?
+            <div class="actions"><span>Погодити</span><span>Змінити оффер</span><span>Обговорити</span></div><time>08:51</time></div>
+        </div>
+      </div>
+      <div class="backstage">
+        <div class="bs-head"><span>Тим часом у штабі</span><span>Paperclip</span></div>
+        <div class="strip" aria-label="Задіяні відділи">
+          <span data-d="ceo" class="on">Офіс СЕО</span><span data-d="sales" class="on">Продажі</span><span data-d="mkt" class="on">Маркетинг</span><span data-d="cx">Клієнти</span><span data-d="edu">Навчання</span><span data-d="fin" class="on">Фінанси</span><span data-d="market">Ринок</span><span data-d="ops">Операції</span><span data-d="team" class="hum">Команда школи</span>
+        </div>
+        <ol class="tasks">
+          <li class="task step done" data-d="ceo" data-at="1800" data-done="2400"><span class="who">Офіс СЕО · Стратег</span><span class="what">Розбити задачу й роздати відділам</span><span class="st"><span class="busy">працює…</span><span class="ok">готово</span></span><span class="res">4 підзадачі для 3 відділів</span></li>
+          <li class="task step done" data-d="sales" data-at="2500" data-done="3900"><span class="who">Продажі · Оцінка клієнтів</span><span class="what">Знайти, хто закінчив базовий курс, і оцінити готовність купити</span><span class="st"><span class="busy">працює…</span><span class="ok">готово</span></span><span class="res">27 студентів, 19 готові купити</span></li>
+          <li class="task step done" data-d="mkt" data-at="2700" data-done="4400"><span class="who">Маркетинг · Контент</span><span class="what">Оффер і текст на основі відгуків про базовий курс</span><span class="st"><span class="busy">працює…</span><span class="ok">готово</span></span><span class="res">оффер і 2 варіанти тексту</span></li>
+          <li class="task step done" data-d="fin" data-at="2900" data-done="4100"><span class="who">Фінанси · Пульс грошей</span><span class="what">Прогноз виручки від запуску</span><span class="st"><span class="busy">працює…</span><span class="ok">готово</span></span><span class="res">≈ 96 000 грн, якщо купить кожен третій</span></li>
+          <li class="task step done" data-d="sales" data-at="4000" data-done="5300"><span class="who">Продажі · Чернетки листів</span><span class="from">отримав список від «Оцінка клієнтів»</span><span class="what">Персональні листи для 19 студентів</span><span class="st"><span class="busy">працює…</span><span class="ok">готово</span></span><span class="res">19 чернеток у CRM, надсилає менеджер</span></li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Приклад 2: питання -->
+    <div class="scn" id="scn-ask" hidden>
+      <div class="phone">
+        <div class="chat-head"><div class="avatar" aria-hidden="true">AI</div><div><b>AI-помічник</b><span>Telegram · онлайн</span></div></div>
+        <div class="msgs">
+          <div class="msg me step" data-at="0">Чому в жовтні оплат менше, ніж у вересні?<time>11:15</time></div>
+          <div class="typing" data-at="500" data-hide="1200" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div class="msg bot step" data-at="1200">Зараз з'ясую. Підключаю фінанси, продажі й маркетинг.<time>11:15</time></div>
+          <div class="typing" data-at="4800" data-hide="5500" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div class="msg bot step" data-at="5500">Реклама тут ні до чого: заявок майже стільки ж (<b>−2%</b>). Оплат менше на <b>18%</b>, бо в жовтні менеджери відповідали на заявку в середньому через <b>6 годин</b> замість однієї, і частина клієнтів пішла до конкурентів. Радимо автовідповідь протягом 5 хвилин і нагадування менеджерам. Поставити задачу відділу продажів?
+            <div class="actions"><span>Так, поставити</span><span>Покажи деталі</span><span>Обговорити</span></div><time>11:22</time></div>
+        </div>
+      </div>
+      <div class="backstage">
+        <div class="bs-head"><span>Тим часом у штабі</span><span>Paperclip</span></div>
+        <div class="strip" aria-label="Задіяні відділи">
+          <span data-d="ceo" class="on">Офіс СЕО</span><span data-d="sales" class="on">Продажі</span><span data-d="mkt" class="on">Маркетинг</span><span data-d="cx">Клієнти</span><span data-d="edu">Навчання</span><span data-d="fin" class="on">Фінанси</span><span data-d="market">Ринок</span><span data-d="ops">Операції</span><span data-d="team" class="hum">Команда школи</span>
+        </div>
+        <ol class="tasks">
+          <li class="task step done" data-d="ceo" data-at="1600" data-done="2100"><span class="who">Офіс СЕО · Стратег</span><span class="what">Визначити, кого підключити</span><span class="st"><span class="busy">працює…</span><span class="ok">готово</span></span><span class="res">фінанси, продажі, маркетинг</span></li>
+          <li class="task step done" data-d="fin" data-at="2200" data-done="3600"><span class="who">Фінанси · Пульс грошей</span><span class="what">Порівняти оплати вересня й жовтня</span><span class="st"><span class="busy">працює…</span><span class="ok">готово</span></span><span class="res">−18%, найбільше просів курс «AI для маркетологів»</span></li>
+          <li class="task step done" data-d="mkt" data-at="2400" data-done="3300"><span class="who">Маркетинг · Аналіз реклами</span><span class="what">Перевірити рекламу й кількість заявок</span><span class="st"><span class="busy">працює…</span><span class="ok">готово</span></span><span class="res">реклама стабільна, заявок −2%</span></li>
+          <li class="task step done" data-d="sales" data-at="2600" data-done="4500"><span class="who">Продажі · Аналіз воронки</span><span class="what">Знайти етап, на якому втрачаємо клієнтів</span><span class="st"><span class="busy">працює…</span><span class="ok">готово</span></span><span class="res">відповідь на заявку: 6 год замість 1</span></li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Приклад 3: помічник пише першим -->
+    <div class="scn" id="scn-alert" hidden>
+      <div class="phone">
+        <div class="chat-head"><div class="avatar" aria-hidden="true">AI</div><div><b>AI-помічник</b><span>Telegram · онлайн</span></div></div>
+        <div class="msgs">
+          <div class="sys step" data-at="0">Ви нічого не писали. Агенти помітили проблему самі</div>
+          <div class="typing" data-at="3700" data-hide="4400" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div class="msg bot step" data-at="4400">Помітив проблему в потоці №12: за добу <b>9</b> студентів пишуть, що не встигають із домашніми завданнями модуля 4. Цей модуль проходять на <b>40%</b> повільніше за інші. Пропоную подовжити дедлайн на 3 дні, а куратору надіслати студентам повідомлення. Чернетка готова.
+            <div class="actions"><span>Погодити</span><span>Показати чернетку</span><span>Обговорити</span></div><time>13:05</time></div>
+          <div class="msg me step" data-at="5600">Погоджую. Додай це в тижневий огляд.<time>13:07</time></div>
+          <div class="typing" data-at="5900" data-hide="6500" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div class="msg bot step" data-at="6500">Готово. Куратор отримав задачу, пункт додано в огляд за понеділок.<time>13:07</time></div>
+        </div>
+      </div>
+      <div class="backstage">
+        <div class="bs-head"><span>Тим часом у штабі</span><span>Paperclip</span></div>
+        <div class="strip" aria-label="Задіяні відділи">
+          <span data-d="ceo" class="on">Офіс СЕО</span><span data-d="sales">Продажі</span><span data-d="mkt">Маркетинг</span><span data-d="cx" class="on">Клієнти</span><span data-d="edu" class="on">Навчання</span><span data-d="fin">Фінанси</span><span data-d="market">Ринок</span><span data-d="ops">Операції</span><span data-d="team" class="hum on">Команда школи</span>
+        </div>
+        <ol class="tasks">
+          <li class="task step done" data-d="cx" data-at="300" data-done="1300"><span class="who">Клієнти · Розбір відгуків</span><span class="what">Сплеск скарг у чаті потоку №12</span><span class="st"><span class="busy">працює…</span><span class="ok">готово</span></span><span class="res">9 студентів за добу, тема: ДЗ модуля 4</span></li>
+          <li class="task step done" data-d="edu" data-at="1400" data-done="2500"><span class="who">Навчання · Навчальна аналітика</span><span class="from">отримав сигнал від «Розбір відгуків»</span><span class="what">Перевірити прогрес потоку</span><span class="st"><span class="busy">працює…</span><span class="ok">готово</span></span><span class="res">модуль 4 проходять на 40% повільніше</span></li>
+          <li class="task step done" data-d="ceo" data-at="2600" data-done="3500"><span class="who">Офіс СЕО · Стратег</span><span class="what">Підготувати рішення для СЕО</span><span class="st"><span class="busy">працює…</span><span class="ok">готово</span></span><span class="res">дедлайн +3 дні і повідомлення від куратора</span></li>
+          <li class="task hum step done" data-d="team" data-at="5900" data-done="6600"><span class="who">Команда школи · Куратор потоку</span><span class="what">Надіслати повідомлення студентам потоку №12</span><span class="st"><span class="busy">передається…</span><span class="ok">передано</span></span><span class="res">після вашого «Погоджую»</span></li>
+        </ol>
+      </div>
+    </div>
+
+    <p class="note">Приклад. Цифри умовні: у живій системі відповіді спираються на дані школи.</p>
+
+    <div class="asks">
+      <h3>Що можна написати помічнику</h3>
+      <ul class="ask-list">
+        <li>«Що з продажами цього тижня?»</li>
+        <li>«Підготуй акцію на Чорну п'ятницю й порахуй, скільки заробимо»</li>
+        <li>«На що найчастіше скаржаться студенти? Запропонуй 3 зміни»</li>
+        <li>«Хто з кураторів найкраще утримує студентів?»</li>
+        <li>«Порівняй наші ціни з конкурентами»</li>
+        <li>«Нагадай у понеділок про рішення щодо нового курсу»</li>
+      </ul>
+    </div>
+  </section>
 
   <section class="section" id="map">
     <div class="section-head">
-      <span class="eyebrow">Карта</span>
+      <span class="eyebrow">Що всередині</span>
       <h2>Як влаштований штаб</h2>
-      <p class="prose">Ви ставите питання й погоджуєте рішення. Помічник передає задачі в штаб. Відділи працюють за розкладом, користуються інструментами й даними школи, а результат повертається до вас коротким брифінгом.</p>
+      <p class="prose">Схему нижче читаємо згори вниз. Ось хто є хто і що робить.</p>
     </div>
+    <ul class="walk">
+      <li><span class="sw human"></span><span><b>Ви, СЕО.</b> Пишете своєму AI-помічнику в Slack або Telegram звичайною мовою: задачу, питання, «що з продажами?». Ви вирішуєте й погоджуєте.</span></li>
+      <li><span class="sw agent"></span><span><b>Ваш AI-помічник.</b> Програма-агент, з якою ви листуєтесь (технічна назва Hermes). Розуміє звичайну мову, пам'ятає ваші пріоритети й сам вирішує, яким відділам передати задачу. Потім збирає їхні результати й повертається до вас з відповіддю.</span></li>
+      <li><span class="sw agent"></span><span><b>Штаб.</b> Віртуальний офіс, де працюють AI-агенти (технічна назва Paperclip). Тут 8 відділів, у кожному по 3 агенти зі своєю роботою, як у штатному розписі. Помічник ставить їм задачі, а вони передають результати одне одному, як колеги.</span></li>
+      <li><span class="sw plain"></span><span><b>Розклад.</b> Частину роботи відділи роблять самі, без вашого запиту: щоранку розбирають нові відгуки, щопонеділка готують тижневий огляд.</span></li>
+      <li><span class="sw tool"></span><span><b>Інструменти агентів.</b> Скрипти точно рахують цифри. Jev за секунди сортує тисячі відгуків і заявок. Claude думає над важливим і пише висновки, поради, чернетки листів.</span></li>
+      <li><span class="sw data"></span><span><b>Дані школи.</b> CRM, оплати, платформа навчання, чати. Агенти їх лише читають і нічого не змінюють без дозволу.</span></li>
+      <li><span class="sw human"></span><span><b>Команда школи.</b> Менеджери, куратори, підтримка. Отримують від агентів чернетки листів і відповідей і самі вирішують, що надіслати клієнтам.</span></li>
+    </ul>
     <figure>
       <div class="map">
         <span class="swipe">Схему можна гортати вбік →</span>
         <div class="scroll">
-          <svg viewBox="0 0 1000 812" role="img" aria-label="Схема AI-штабу: СЕО спілкується з помічником Hermes; помічник передає задачі в штаб Paperclip з восьми відділів; відділи користуються скриптами, Jev і Claude, які читають дані школи; чернетки йдуть на погодження команді школи.">
+          <svg viewBox="0 0 1000 812" role="img" aria-label="Схема AI-штабу: СЕО пише звичайною мовою AI-помічнику Hermes; помічник передає задачі в штаб Paperclip з восьми відділів; відділи користуються скриптами, Jev і Claude, які читають дані школи; чернетки йдуть на погодження команді школи.">
             <defs>
               <marker id="ah-map" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
                 <path d="M0,0 L10,5 L0,10 z" class="ahead"/>
@@ -331,11 +544,11 @@ footer a:focus-visible { outline: 2px solid var(--agent); outline-offset: 2px; b
             <!-- Верхній ряд: СЕО -->
             <g class="n human">
               <rect x="390" y="14" width="220" height="62" rx="12"/>
-              <text class="t-hl" x="500" y="41" text-anchor="middle">СЕО</text>
-              <text class="t-s" x="500" y="61" text-anchor="middle">вирішує й погоджує</text>
+              <text class="t-hl" x="500" y="41" text-anchor="middle">Ви, СЕО</text>
+              <text class="t-s" x="500" y="61" text-anchor="middle">пишете, вирішуєте, погоджуєте</text>
             </g>
             <line class="wire" x1="500" y1="77" x2="500" y2="119" marker-start="url(#ah-map)" marker-end="url(#ah-map)"/>
-            <text class="t-lab" x="512" y="102">питання · рішення</text>
+            <text class="t-lab" x="512" y="102">задачі й питання · відповіді</text>
 
             <!-- Другий ряд -->
             <g class="n plain">
@@ -346,9 +559,9 @@ footer a:focus-visible { outline: 2px solid var(--agent); outline-offset: 2px; b
             </g>
             <g class="n agent">
               <rect x="350" y="120" width="300" height="68" rx="10"/>
-              <text class="t-h" x="500" y="146" text-anchor="middle">Помічник СЕО · Hermes</text>
-              <text class="t-s" x="500" y="165" text-anchor="middle">у Slack / Telegram: брифінги,</text>
-              <text class="t-s" x="500" y="180" text-anchor="middle">відповіді, погодження</text>
+              <text class="t-h" x="500" y="146" text-anchor="middle">Ваш AI-помічник · Hermes</text>
+              <text class="t-s" x="500" y="165" text-anchor="middle">у Telegram / Slack, розуміє</text>
+              <text class="t-s" x="500" y="180" text-anchor="middle">звичайну мову, роздає задачі</text>
             </g>
             <g class="n human">
               <rect x="700" y="120" width="280" height="68" rx="10"/>
@@ -368,7 +581,7 @@ footer a:focus-visible { outline: 2px solid var(--agent); outline-offset: 2px; b
             <g class="frame">
               <rect x="20" y="236" width="960" height="332" rx="14"/>
               <text class="t-frame" x="40" y="263">ШТАБ · PAPERCLIP</text>
-              <text class="t-s" x="960" y="263" text-anchor="end">відділи, посади, розклад, бюджети, журнал дій</text>
+              <text class="t-s" x="960" y="263" text-anchor="end">8 відділів · 24 AI-агенти · бюджети · журнал дій</text>
             </g>
 
             <g class="n agent">
@@ -382,7 +595,7 @@ footer a:focus-visible { outline: 2px solid var(--agent); outline-offset: 2px; b
             <g class="n agent">
               <rect x="270" y="280" width="220" height="128" rx="10"/>
               <text class="t-h" x="284" y="306">Продажі</text>
-              <text class="t-a" x="284" y="330">Скоринг лідів</text>
+              <text class="t-a" x="284" y="330">Оцінка клієнтів</text>
               <text class="t-a" x="284" y="348">Чернетки листів</text>
               <text class="t-a" x="284" y="366">Аналіз дзвінків</text>
               <text class="t-k" x="284" y="392">щодня · звіт щотижня</text>
@@ -400,7 +613,7 @@ footer a:focus-visible { outline: 2px solid var(--agent); outline-offset: 2px; b
               <text class="t-h" x="756" y="306">Клієнтський досвід</text>
               <text class="t-a" x="756" y="330">Розбір відгуків і NPS</text>
               <text class="t-a" x="756" y="348">Гаряча база клієнтів</text>
-              <text class="t-a" x="756" y="366">Помічник підтримки</text>
+              <text class="t-a" x="756" y="366">Відповіді клієнтам</text>
               <text class="t-k" x="756" y="392">щодня · терміново одразу</text>
             </g>
 
@@ -483,38 +696,10 @@ footer a:focus-visible { outline: 2px solid var(--agent); outline-offset: 2px; b
         <li><span class="sw tool"></span>Інструмент агентів</li>
         <li><span class="sw data"></span>Дані школи</li>
       </ul>
-      <figcaption>Єдина точка контакту для вас — помічник. Усі листи клієнтам, публікації й зміни в CRM проходять через людину: менеджера, куратора або вас.</figcaption>
+      <figcaption>Єдина точка контакту для вас — AI-помічник. Усі листи клієнтам, публікації й зміни в CRM проходять через людину: менеджера, куратора або вас.</figcaption>
     </figure>
   </section>
 
-  <section class="section" id="roles">
-    <div class="section-head">
-      <span class="eyebrow">Хто є хто</span>
-      <h2>П'ять ролей у системі</h2>
-    </div>
-    <ul class="roles">
-      <li>
-        <div class="role-name"><span class="sw agent"></span><span>Помічник СЕО<small>Hermes</small></span></div>
-        <p>Живе у вашому месенджері й пам'ятає ваші пріоритети. Надсилає брифінги, відповідає на питання людською мовою, приносить рішення на погодження.</p>
-      </li>
-      <li>
-        <div class="role-name"><span class="sw agent"></span><span>Штаб<small>Paperclip</small></span></div>
-        <p>Офіс для агентів: відділи, посади, розклад, бюджет на кожного агента і журнал усіх дій. Тут видно, хто що зробив і скільки це коштувало.</p>
-      </li>
-      <li>
-        <div class="role-name"><span class="sw tool"></span><span>Сортувальник<small>Jev</small></span></div>
-        <p>За секунди й копійки оцінює тисячі відгуків, заявок і повідомлень: хто хоче купити наступний курс, хто незадоволений, хто пише від імені компанії.</p>
-      </li>
-      <li>
-        <div class="role-name"><span class="sw tool"></span><span>Аналітик<small>Claude</small></span></div>
-        <p>Думає лише над відібраним важливим: пише висновки, рекомендації та чернетки листів. Так глибокий аналіз не витрачається на тисячі дрібниць.</p>
-      </li>
-      <li>
-        <div class="role-name"><span class="sw tool"></span><span>Скрипти<small>калькулятор</small></span></div>
-        <p>Рахують усі цифри з даних школи, тому числа точні й однакові щоразу. Перед відправкою текстів у зовнішні сервіси прибирають імена, email і телефони.</p>
-      </li>
-    </ul>
-  </section>
 
   <section class="section" id="departments">
     <div class="section-head">
@@ -535,7 +720,7 @@ footer a:focus-visible { outline: 2px solid var(--agent); outline-offset: 2px; b
       <article class="dept">
         <div class="dept-top"><span class="tag">етап 2</span><h3>Продажі</h3></div>
         <ul class="agents">
-          <li><b>Скоринг лідів</b>Оцінює кожну заявку: чи наш клієнт, чи готовий купити, наскільки терміново.</li>
+          <li><b>Оцінка клієнтів</b>Оцінює кожну заявку: чи наш клієнт, чи готовий купити, наскільки терміново.</li>
           <li><b>Чернетки листів</b>Персональні листи «через турботу»: проблема клієнта і корисне рішення. Надсилає менеджер.</li>
           <li><b>Аналіз дзвінків</b>Чи домовились про наступний крок, заперечення, причини відмов.</li>
         </ul>
@@ -544,7 +729,7 @@ footer a:focus-visible { outline: 2px solid var(--agent); outline-offset: 2px; b
       <article class="dept">
         <div class="dept-top"><span class="tag">етап 3</span><h3>Маркетинг</h3></div>
         <ul class="agents">
-          <li><b>Аналіз реклами</b>Хук, оффер, формат і відповідність лендингу у ваших і конкурентних креативах.</li>
+          <li><b>Аналіз реклами</b>Що в рекламі чіпляє, яку пропозицію бачить клієнт і чи відповідає їй сторінка курсу. Ваші й конкурентні оголошення.</li>
           <li><b>Слабкості конкурентів</b>Тисячі відгуків про конкурентів перетворюються на карту болей ринку й ідеї офферів.</li>
           <li><b>Контент-план</b>Теми з реальних питань аудиторії.</li>
         </ul>
@@ -555,7 +740,7 @@ footer a:focus-visible { outline: 2px solid var(--agent); outline-offset: 2px; b
         <ul class="agents">
           <li><b>Розбір відгуків</b>Кожен відгук, NPS і звернення: тема, настрій, ризик відтоку, запит повернення.</li>
           <li><b>Гаряча база</b>Хто хоче наступний курс, хто з компанії, хто готовий рекомендувати школу.</li>
-          <li><b>Помічник підтримки</b>Готує відповідь, інший агент її перевіряє, менеджер надсилає, редагує або відхиляє.</li>
+          <li><b>Відповіді клієнтам</b>Готує відповідь на звернення, інший агент її перевіряє, менеджер надсилає, редагує або відхиляє.</li>
         </ul>
         <div class="dept-foot"><span class="k">щодня · негатив одразу</span><span class="you">Ви: гарячі клієнти й ризики</span></div>
       </article>
@@ -608,7 +793,7 @@ footer a:focus-visible { outline: 2px solid var(--agent); outline-offset: 2px; b
       <div class="map">
         <span class="swipe">Схему можна гортати вбік →</span>
         <div class="scroll">
-          <svg viewBox="0 0 1000 650" role="img" aria-label="Послідовність одного ранку: о 06:00 розклад запускає агента; скрипт забирає нові відгуки й знеособлює їх; Jev оцінює кожен відгук; код рахує гарячість, Claude перевіряє сумнівні; агент записує гарячу базу в CRM і готує чернетки; о 08:00 помічник надсилає брифінг СЕО; СЕО читає й погоджує; вдень менеджер перевіряє й надсилає листи.">
+          <svg viewBox="0 0 1000 650" role="img" aria-label="Послідовність одного ранку: о 06:00 розклад запускає агента; скрипт забирає нові відгуки й знеособлює їх; Jev оцінює кожен відгук; код рахує, хто «гарячий», Claude перевіряє сумнівні; агент записує гарячу базу в CRM і готує чернетки; о 08:00 помічник надсилає брифінг СЕО; СЕО читає й погоджує; вдень менеджер перевіряє й надсилає листи.">
             <defs>
               <marker id="ah-flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
                 <path d="M0,0 L10,5 L0,10 z" class="ahead"/>
@@ -663,14 +848,14 @@ footer a:focus-visible { outline: 2px solid var(--agent); outline-offset: 2px; b
             <g class="n tool">
               <rect x="240" y="254" width="136" height="48" rx="8"/>
               <text class="t-step" x="250" y="270">Jev оцінює кожен</text>
-              <text class="t-step" x="250" y="283">відгук: апсейл,</text>
-              <text class="t-step" x="250" y="296">B2B, ризик відтоку</text>
+              <text class="t-step" x="250" y="283">відгук: чи купить</text>
+              <text class="t-step" x="250" y="296">ще, чи може піти</text>
             </g>
             <!-- 5 -->
             <g class="n tool">
               <rect x="240" y="318" width="136" height="48" rx="8"/>
-              <text class="t-step" x="250" y="334">Код рахує</text>
-              <text class="t-step" x="250" y="347">«гарячість», Claude</text>
+              <text class="t-step" x="250" y="334">Код рахує, хто</text>
+              <text class="t-step" x="250" y="347">«гарячий», Claude</text>
               <text class="t-step" x="250" y="360">перевіряє сумнівні</text>
             </g>
             <!-- 6 -->
@@ -740,8 +925,8 @@ footer a:focus-visible { outline: 2px solid var(--agent); outline-offset: 2px; b
       </div>
       <div class="chat" aria-label="Приклад ранкового брифінгу">
         <div class="chat-head">
-          <div class="avatar" aria-hidden="true">П</div>
-          <div><b>Помічник СЕО</b><span>сьогодні, 08:00</span></div>
+          <div class="avatar" aria-hidden="true">AI</div>
+          <div><b>AI-помічник</b><span>сьогодні, 08:00</span></div>
         </div>
         <div class="bubble">
           <p>Доброго ранку. Головне за вчора:</p>
@@ -783,7 +968,7 @@ footer a:focus-visible { outline: 2px solid var(--agent); outline-offset: 2px; b
       <li>
         <span class="when">тиждень 1</span>
         <h3>Знайомство</h3>
-        <p>Розмова з вами, доступи до систем, профіль школи: продукти, клієнти, визначення, хто що погоджує.</p>
+        <p>Розмова з вами, доступи до систем і опис школи для агентів: продукти, ціни, клієнти, хто що погоджує.</p>
       </li>
       <li>
         <span class="when">тижні 2–5</span>
@@ -824,5 +1009,66 @@ footer a:focus-visible { outline: 2px solid var(--agent); outline-offset: 2px; b
   </footer>
 
 </main>
+<script>
+(function () {
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+  var scns = tabs.map(function (t) { return document.getElementById(t.getAttribute('aria-controls')); });
+  var playBtn = document.getElementById('play');
+  var timers = [];
+  function each(root, sel, fn) { Array.prototype.forEach.call(root.querySelectorAll(sel), fn); }
+  function clear() { timers.forEach(clearTimeout); timers = []; }
+  function rest(s) {
+    s.classList.remove('anim');
+    each(s, '.step', function (e) { e.classList.add('on'); });
+    each(s, '.task', function (e) { e.classList.add('done'); });
+    each(s, '.typing', function (e) { e.classList.remove('on'); });
+    each(s, '.strip span[data-d]', function (e) {
+      e.classList.toggle('on', !!s.querySelector('.task[data-d="' + e.getAttribute('data-d') + '"]'));
+    });
+  }
+  function play(s) {
+    clear();
+    if (reduce) { rest(s); return; }
+    s.classList.add('anim');
+    each(s, '.step', function (e) { e.classList.remove('on'); });
+    each(s, '.task', function (e) { e.classList.remove('done'); });
+    each(s, '.strip span', function (e) { e.classList.remove('on'); });
+    var end = 0;
+    each(s, '[data-at]', function (e) {
+      var at = +e.getAttribute('data-at');
+      timers.push(setTimeout(function () {
+        e.classList.add('on');
+        if (e.classList.contains('task')) {
+          var d = s.querySelector('.strip span[data-d="' + e.getAttribute('data-d') + '"]');
+          if (d) d.classList.add('on');
+        }
+      }, at));
+      if (e.hasAttribute('data-done')) {
+        var dn = +e.getAttribute('data-done');
+        timers.push(setTimeout(function () { e.classList.add('done'); }, dn));
+        end = Math.max(end, dn);
+      }
+      if (e.hasAttribute('data-hide')) {
+        timers.push(setTimeout(function () { e.classList.remove('on'); }, +e.getAttribute('data-hide')));
+      }
+      end = Math.max(end, at);
+    });
+    timers.push(setTimeout(function () { rest(s); }, end + 700));
+  }
+  function select(i, animate) {
+    clear();
+    tabs.forEach(function (t, j) { t.setAttribute('aria-pressed', j === i ? 'true' : 'false'); });
+    scns.forEach(function (s, j) { s.hidden = j !== i; rest(s); });
+    if (animate) play(scns[i]);
+  }
+  tabs.forEach(function (t, i) { t.addEventListener('click', function () { select(i, true); }); });
+  if (playBtn) playBtn.addEventListener('click', function () {
+    var i = tabs.findIndex(function (t) { return t.getAttribute('aria-pressed') === 'true'; });
+    play(scns[i < 0 ? 0 : i]);
+  });
+  scns.forEach(rest);
+})();
+</script>
 </body>
 </html>
